@@ -12,7 +12,7 @@ resource "azurerm_data_factory_dataset_cosmosdb_sqlapi" "data_factory_dataset_co
   parameters            = each.value.parameters
 
   dynamic "schema_column" {
-    for_each = each.value.schema_column != null ? [each.value.schema_column] : []
+    for_each = each.value.schema_column != null ? each.value.schema_column : []
     content {
       description = schema_column.value.description
       name        = schema_column.value.name
