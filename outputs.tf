@@ -1,3 +1,7 @@
+output "data_factory_dataset_cosmosdb_sqlapis_id" {
+  description = "Map of id values across all data_factory_dataset_cosmosdb_sqlapis, keyed the same as var.data_factory_dataset_cosmosdb_sqlapis"
+  value       = { for k, v in azurerm_data_factory_dataset_cosmosdb_sqlapi.data_factory_dataset_cosmosdb_sqlapis : k => v.id }
+}
 output "data_factory_dataset_cosmosdb_sqlapis_additional_properties" {
   description = "Map of additional_properties values across all data_factory_dataset_cosmosdb_sqlapis, keyed the same as var.data_factory_dataset_cosmosdb_sqlapis"
   value       = { for k, v in azurerm_data_factory_dataset_cosmosdb_sqlapi.data_factory_dataset_cosmosdb_sqlapis : k => v.additional_properties }
