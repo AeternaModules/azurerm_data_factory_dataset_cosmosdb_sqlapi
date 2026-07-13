@@ -34,36 +34,62 @@ EOT
       type        = optional(string)
     })))
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_data_factory_dataset_cosmosdb_sqlapi's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: name
-  #   source:    [from validate.LinkedServiceDatasetName] regexp.MustCompile(`^[-.+?/<>*%&:\\]+$`).MatchString(value)
-  # path: data_factory_id
-  #   source:    [from factories.ValidateFactoryID] !ok
-  # path: data_factory_id
-  #   source:    [from factories.ValidateFactoryID] err != nil
-  # path: linked_service_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: collection_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: description
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: folder
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: schema_column.name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: schema_column.type
-  #   condition: contains(["Byte", "Byte[]", "Boolean", "Date", "DateTime", "DateTimeOffset", "Decimal", "Double", "Guid", "Int16", "Int32", "Int64", "Single", "String", "TimeSpan"], value)
-  #   message:   must be one of: Byte, Byte[], Boolean, Date, DateTime, DateTimeOffset, Decimal, Double, Guid, Int16, Int32, Int64, Single, String, TimeSpan
-  # path: schema_column.description
-  #   condition: length(value) > 0
-  #   message:   must not be empty
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        length(v.linked_service_name) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.collection_name == null || (length(v.collection_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.description == null || (length(v.description) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.folder == null || (length(v.folder) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.schema_column == null || alltrue([for item in v.schema_column : (length(item.name) > 0)])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.schema_column == null || alltrue([for item in v.schema_column : (item.type == null || (contains(["Byte", "Byte[]", "Boolean", "Date", "DateTime", "DateTimeOffset", "Decimal", "Double", "Guid", "Int16", "Int32", "Int64", "Single", "String", "TimeSpan"], item.type)))])
+      )
+    ])
+    error_message = "must be one of: Byte, Byte[], Boolean, Date, DateTime, DateTimeOffset, Decimal, Double, Guid, Int16, Int32, Int64, Single, String, TimeSpan"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_dataset_cosmosdb_sqlapis : (
+        v.schema_column == null || alltrue([for item in v.schema_column : (item.description == null || (length(item.description) > 0))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 3 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
